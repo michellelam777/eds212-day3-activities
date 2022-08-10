@@ -1,0 +1,48 @@
+---
+title: "Toolik Chem"
+author: "Michelle Lam"
+date: "2022-08-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+toolik_biochem <- read_csv(here::here("data",
+                                      "2011_Kling_akchem.csv"), na = ".") %>% 
+  clean_names()
+```
+
+```{r}
+inlet_biochem <- toolik_biochem |> 
+  filter(site == "Toolik Inlet") |> 
+  select("p_h", "doc_u_m", "tdn_u_m")
+```
+
+### mean value of inlet_biochem
+```{r}
+# using for loops
+mean_inlet_biochem <- vector(mode = "numeric", length = ncol(inlet_biochem))
+
+for (i in seq_along(inlet_biochem)) {
+  mean_val <- mean(inlet_biochem[[i]], na.rm = TRUE)
+  mean_inlet_biochem[i] <- mean_val
+}
+
+mean_inlet_biochem
+
+# using apply function
+apply(X = inlet_biochem, MARGIN = 2, FUN = mean, na.rm = TRUE)
+
+# map_df
+map_df(.x = inlet_biochem, .f = mean, na.rm = TRUE)
+
+```
+
+
